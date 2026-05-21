@@ -28,4 +28,4 @@ var client = new ContentstackClient(
 ## Next steps
 
 - Configure [environment-specific settings](/developers/contentstack-delivery/dot-net-sdk/get-started-with-dotnet-delivery-sdk) in your app.
-- See the [Content Management API](/docs/developers/apis/content-management-api) for creating entries programmatically.
+- See the [Content Management API](/developers/apis/content-management-api) for creating entries programmatically.
