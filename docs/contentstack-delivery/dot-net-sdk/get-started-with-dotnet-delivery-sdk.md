@@ -6,7 +6,7 @@ heading: "Get Started with .NET Delivery SDK"
 
 ## Overview
 
-The Contentstack .NET Delivery SDK lets you fetch published content from your stack in .NET applications.
+The Contentstack .NET Delivery SDK allows you to fetch published content from your stack in .NET applications.
 
 > **Note:** You need a Delivery token and stack API key before you initialize the SDK.
 
