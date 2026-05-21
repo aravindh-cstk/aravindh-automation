@@ -47,4 +47,5 @@ Use relative paths next to the doc, e.g. `![](./images/screenshot.png)`. The syn
 4. Merge to `main` — sync workflow creates/updates drafts in Contentstack
 5. Review and publish in the Contentstack UI
 
-See [tools/cs-sync/README.md](../tools/cs-sync/README.md) for secrets and local commands.
+- [SETUP-AFTER-SECRETS.md](./SETUP-AFTER-SECRETS.md) — what to do after GitHub secrets are configured
+- [tools/cs-sync/README.md](../tools/cs-sync/README.md) — secrets and local commands

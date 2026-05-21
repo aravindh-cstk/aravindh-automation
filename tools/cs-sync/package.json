@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@actions/core": "^1.11.1",
+    "dotenv": "^16.4.7",
     "gray-matter": "^4.0.3",
     "markdown-it": "^14.1.0",
     "sanitize-html": "^2.14.0",

@@ -1,7 +1,15 @@
 node_modules/
 tools/cs-sync/node_modules/
 *.log
+
+# Local secrets (never commit)
 .env
-.env.*
+.env.local
+tools/cs-sync/.env
+
+# Keep the committed template
+!.env.example
+!tools/cs-sync/.env.example
+
 contentstack.config.json
 .DS_Store

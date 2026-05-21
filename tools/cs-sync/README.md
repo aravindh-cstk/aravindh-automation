@@ -39,10 +39,8 @@ Used when a doc file is **deleted** from `main` to unpublish that entry from pro
 ```bash
 cd tools/cs-sync
 npm ci
-
-export CONTENTSTACK_API_KEY=your_stack_api_key
-export CONTENTSTACK_MANAGEMENT_TOKEN=your_management_token
-export CONTENTSTACK_ENVIRONMENT=production
+cp .env.example .env
+# Edit .env with your stack API key and management token (file is gitignored)
 
 # Sync between two commits (same as CI)
 npm run sync -- --before "$(git rev-parse HEAD~1)" --after "$(git rev-parse HEAD)"
