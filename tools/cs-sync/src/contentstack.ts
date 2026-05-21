@@ -35,7 +35,7 @@ export class ContentstackClient {
       include_count: "true",
     });
 
-    const res = await fetch(`${this.entriesBase()}?${params}&locale=${encodeURIComponent(this.config.CS_LOCALE)}`, {
+    const res = await fetch(`${this.entriesBase()}?${params}`, {
       headers: this.headers(),
     });
 
