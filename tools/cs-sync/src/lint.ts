@@ -82,6 +82,8 @@ function resolveLinkTarget(
     return null;
   }
   if (href.startsWith("#")) return null;
+  // /docs/ paths reference the live Contentstack site, not files in this repo
+  if (href.startsWith("/docs/")) return null;
 
   if (href.startsWith(DOCS_URL_PREFIX)) {
     return resolveUrlToFile(repoRoot, docsRoot, href.split("#")[0] ?? href);
