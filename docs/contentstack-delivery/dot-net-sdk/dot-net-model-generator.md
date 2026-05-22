@@ -1,7 +1,7 @@
 ---
-title: "[.NET] - Contentstack .NET Model Generator"
+heading: Contentstack .NET Model Generator
 description: Use the Contentstack .NET Model Generator to create C# model classes from content types in your stack.
-url: https://www.contentstack.com/docs/developers/sdks/content-delivery-sdk/dot-net/contentstack-dot-net-model-generator
+url: /developers/sdks/content-delivery-sdk/dot-net/contentstack-dot-net-model-generator
 marker: .NET Delivery SDK
 product: Contentstack
 doc_type: sdk-tooling
@@ -13,7 +13,7 @@ last_updated: 2026-03-25
 
 # [.NET] - Contentstack .NET Model Generator
 
-This page explains how to install and use the Contentstack .NET Model Generator to generate C# model classes from Contentstack content types, including supported authentication methods (Authtoken and OAuth 2.0). It is intended for .NET developers who want to automate model generation for their Contentstack stacks.
+This page tell you how to install and use the Contentstack .NET Model Generator to generate C# model classes from Contentstack content types, including supported authentication methods (Authtoken and OAuth 2.0). It is intended for .NET developers who want to automate model generation for their Contentstack stacks.
 
 ## Contentstack .NET Model Generator
 
