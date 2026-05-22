@@ -1,7 +1,7 @@
 ---
-title: "[.NET] - Contentstack .NET Model Generator"
+title: "Contentstack .NET Model Generator"
 description: Use the Contentstack .NET Model Generator to create C# model classes from content types in your stack.
-url: https://www.contentstack.com/docs/developers/sdks/content-delivery-sdk/dot-net/contentstack-dot-net-model-generator
+url: /developers/sdks/content-delivery-sdk/dot-net/contentstack-dot-net-model-generator
 marker: .NET Delivery SDK
 product: Contentstack
 doc_type: sdk-tooling
