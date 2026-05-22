@@ -1,8 +1,8 @@
 ---
-title: "[.NET] - Contentstack .NET Model Generator"
+heading: "Contentstack .NET Model Generator"
+url: /developers/sdks/content-delivery-sdk/dot-net/contentstack-dot-net-model-generator
+marker: ".NET Delivery SDK"
 description: Use the Contentstack .NET Model Generator to create C# model classes from content types in your stack.
-url: https://www.contentstack.com/docs/developers/sdks/content-delivery-sdk/dot-net/contentstack-dot-net-model-generator
-marker: .NET Delivery SDK
 product: Contentstack
 doc_type: sdk-tooling
 audience:
@@ -13,7 +13,7 @@ last_updated: 2026-03-25
 
 # [.NET] - Contentstack .NET Model Generator
 
-This page explains how to install and use the Contentstack .NET Model Generator to generate C# model classes from Contentstack content types, including supported authentication methods (Authtoken and OAuth 2.0). It is intended for .NET developers who want to automate model generation for their Contentstack stacks.
+This page tell you how to install and use the Contentstack .NET Model Generator to generate C# model classes from Contentstack content types, including supported authentication methods (Authtoken and OAuth 2.0). It is intended for .NET developers who want to automate model generation for their Contentstack stacks.
 
 ## Contentstack .NET Model Generator
 
@@ -130,7 +130,7 @@ contentstack.model.generator -a  -A  -N
 #### OAuth Flow
 - **Authorization**: The tool displays the Contentstack OAuth authorization URL for you to open manually
 - **Authentication**: Open the URL in your browser, log in to your Contentstack account and authorize the application
-- **Callback**: You’ll be redirected to your specified redirect URI with an authorization code
+- **Callback**: You'll be redirected to your specified redirect URI with an authorization code
 - **Code Entry**: Copy the authorization code from the redirect URL and paste it into the tool
 - **Token Exchange**: The tool automatically exchanges the code for an access token
 - **Model Generation**: The tool fetches your content types and generates models
@@ -172,7 +172,7 @@ contentstack.model.generator --oauth -a  --client-id  --redirect-uri http://loca
 
 ### OAuth Command Example
 
-Here’s what you will see when running an OAuth command:
+Here's what you will see when running an OAuth command:
 
 ```
 $ contentstack.model.generator --oauth -a  --client-id myclient123 --redirect-uri http://localhost:8184
@@ -220,7 +220,7 @@ OAuth logout successful!
 - **Secure Logout**: Automatically clears tokens after model generation
 
 ### Troubleshooting OAuth
-- **Invalid Redirect URI**: Ensure the redirect URI matches exactly what’s configured in your OAuth app
+- **Invalid Redirect URI**: Ensure the redirect URI matches exactly what's configured in your OAuth app
 - **Client ID/Secret Issues**: Verify your OAuth app credentials
 - **Network Issues**: Check your internet connection and Contentstack service status
 - **Permission Issues**: Ensure your account has the necessary permissions for the stack
@@ -229,11 +229,11 @@ OAuth logout successful!
 
 Copyright (c) 2012-2025 Contentstack
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ## Common questions
 
@@ -248,5 +248,3 @@ A: Run: `Contentstack.model.generator --help`
 
 **Q: How can I prevent prompts when overwriting existing model files?**  
 A: Use the `--force` flag to overwrite existing model files without confirmation prompts.
-
-contentstack-dot-net-model-generator.md
