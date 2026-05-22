@@ -1,7 +1,7 @@
 ---
 heading: Get Started with .NET SDK and Live Preview"
 description: Get started guide for using the Contentstack .NET SDK with Live Preview, including installation, stack initialization, HTTP pipeline configuration, SSR setup, and basic queries.
-url: https://www.contentstack.com/docs/developers/sdks/content-delivery-sdk/dot-net/get-started-with-dot-net-sdk-and-live-preview
+url: /developers/sdks/content-delivery-sdk/dot-net/get-started-with-dot-net-sdk-and-live-preview
 product: Contentstack
 doc_type: sdk-guide
 audience:
@@ -12,13 +12,11 @@ last_updated: 2026-03-25
 marker: dot-net-sdk
 ---
 
-# [.NET] - Get Started with .NET SDK and Live Preview
-
 This page explains how to install and set up the Contentstack .NET SDK with Live Preview, including configuration for HTTP request pipelines and server-side rendered (SSR) websites. It is intended for developers integrating Contentstack content delivery into .NET applications and should be used when enabling Live Preview and querying content via the SDK.
 
 ## Get Started with .NET SDK and Live Preview
 
-This guide will help you get started with [Contentstack .NET SDK](/docs/developers/sdks/content-delivery-sdk/dot-net/about-dot-net-delivery-sdk/) to build apps powered by Contentstack.
+This guide helps you get started with [Contentstack .NET SDK](/docs/developers/sdks/content-delivery-sdk/dot-net/about-dot-net-delivery-sdk/) to build apps powered by Contentstack.
 
 ## Prerequisites
 - .NET version 2.0 or later
