@@ -3,11 +3,27 @@ import fs from "node:fs";
 import path from "node:path";
 import { execSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
+import { z } from "zod";
 import { findRepoRoot } from "./diff.js";
 import { parseDocFile, resolveDocPaths } from "./parser.js";
 
 const MD_LINK_RE = /\[([^\]]*)]\(([^)]+)\)/g;
 const DOCS_URL_PREFIX = "/developers/";
+
+function formatZodErrors(file: string, err: z.ZodError): string[] {
+  return err.issues.map((issue) => {
+    const field = issue.path[0] as string | undefined;
+    if (!field) return `${file}: Invalid frontmatter: ${issue.message}`;
+    // required_error and min(1) messages already contain the full guidance
+    if (
+      issue.code === "invalid_type" ||
+      (issue.code === "too_small" && issue.minimum === 1)
+    ) {
+      return `${file}: ${issue.message}`;
+    }
+    return `${file}: ${issue.message}`;
+  });
+}
 
 function parseArgs(argv: string[]): { base: string } {
   let base = "origin/main";
@@ -17,24 +33,32 @@ function parseArgs(argv: string[]): { base: string } {
   return { base };
 }
 
-function listChangedDocs(repoRoot: string, docsRoot: string, base: string): string[] {
+function listChangedDocs(
+  repoRoot: string,
+  docsRoot: string,
+  base: string,
+): { mdFiles: string[]; nonMdFiles: string[] } {
   try {
     execSync(`git merge-base ${base} HEAD`, { cwd: repoRoot, stdio: "pipe" });
     const mergeBase = execSync(`git merge-base ${base} HEAD`, {
       cwd: repoRoot,
       encoding: "utf8",
     }).trim();
-    const out = execSync(`git diff --name-only ${mergeBase} HEAD -- ${docsRoot}`, {
-      cwd: repoRoot,
-      encoding: "utf8",
-    }).trim();
-    return out ? out.split("\n").filter((p) => p.endsWith(".md")) : [];
+    const out = execSync(
+      `git diff --name-only --diff-filter=d ${mergeBase} HEAD -- ${docsRoot}`,
+      { cwd: repoRoot, encoding: "utf8" },
+    ).trim();
+    const all = out ? out.split("\n").filter(Boolean) : [];
+    return {
+      mdFiles: all.filter((p) => p.endsWith(".md")),
+      nonMdFiles: all.filter((p) => !p.endsWith(".md")),
+    };
   } catch {
     const out = execSync(`git ls-files '${docsRoot}/**/*.md'`, {
       cwd: repoRoot,
       encoding: "utf8",
     }).trim();
-    return out ? out.split("\n") : [];
+    return { mdFiles: out ? out.split("\n").filter(Boolean) : [], nonMdFiles: [] };
   }
 }
 
@@ -126,8 +150,8 @@ function lintDoc(
       }
     }
   } catch (err) {
-    if (err instanceof Error && "issues" in err) {
-      errors.push(`${repoRelativePath}: ${err.message}`);
+    if (err instanceof z.ZodError) {
+      errors.push(...formatZodErrors(repoRelativePath, err));
     } else {
       errors.push(
         `${repoRelativePath}: ${err instanceof Error ? err.message : String(err)}`,
@@ -144,14 +168,22 @@ async function main(): Promise<void> {
   const repoRoot = findRepoRoot(path.join(scriptDir, "../../.."));
   const docsRoot = process.env.CS_DOCS_ROOT ?? "docs";
 
-  const files = listChangedDocs(repoRoot, docsRoot, base);
-  if (files.length === 0) {
+  const { mdFiles, nonMdFiles } = listChangedDocs(repoRoot, docsRoot, base);
+
+  const allErrors: string[] = [];
+
+  for (const file of nonMdFiles) {
+    allErrors.push(
+      `${file}: File is missing the .md extension — rename it to ${path.basename(file)}.md so it is picked up by the CMS sync`,
+    );
+  }
+
+  if (mdFiles.length === 0 && nonMdFiles.length === 0) {
     console.log("No doc files to lint.");
     return;
   }
 
-  const allErrors: string[] = [];
-  for (const file of files) {
+  for (const file of mdFiles) {
     allErrors.push(...lintDoc(repoRoot, docsRoot, file));
   }
 
@@ -161,7 +193,7 @@ async function main(): Promise<void> {
     process.exit(1);
   }
 
-  console.log(`Lint passed for ${files.length} file(s).`);
+  console.log(`Lint passed for ${mdFiles.length} file(s).`);
 }
 
 main().catch((err) => {

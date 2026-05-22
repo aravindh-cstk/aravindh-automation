@@ -5,13 +5,20 @@ import { z } from "zod";
 
 export const frontMatterSchema = z.object({
   url: z
-    .string()
-    .min(1)
-    .refine((u) => u.startsWith("/developers/"), {
-      message: "url must start with /developers/",
+    .string({ required_error: "Missing required frontmatter field 'url' — add: url: /your-product/your-article-slug" })
+    .min(1, { message: "Missing required frontmatter field 'url' — add: url: /your-product/your-article-slug" })
+    .refine((u) => !u.startsWith("/docs/"), {
+      message: "Invalid 'url' — must not start with /docs/ (use a product path like /your-product/your-article-slug)",
+    })
+    .refine((u) => !u.endsWith("/"), {
+      message: "Invalid 'url' — must not end with a trailing slash (remove the trailing /)",
     }),
-  marker: z.string().min(1),
-  heading: z.string().min(1),
+  marker: z
+    .string({ required_error: "Missing required frontmatter field 'marker' — add: marker: Your Product Name" })
+    .min(1, { message: "Missing required frontmatter field 'marker' — add: marker: Your Product Name" }),
+  heading: z
+    .string({ required_error: "Missing required frontmatter field 'heading' — add: heading: Your Article Title" })
+    .min(1, { message: "Missing required frontmatter field 'heading' — add: heading: Your Article Title" }),
 });
 
 export type DocFrontMatter = z.infer<typeof frontMatterSchema>;

@@ -4,8 +4,11 @@ on:
   pull_request:
     branches: [main]
     paths:
-      - "docs/**/*.md"
+      - "docs/**"
       - "tools/cs-sync/**"
+
+permissions:
+  pull-requests: write
 
 jobs:
   lint:
@@ -26,5 +29,62 @@ jobs:
         run: npm ci
 
       - name: Lint documentation
+        id: lint
         working-directory: tools/cs-sync
-        run: npm run lint -- --base origin/main
+        continue-on-error: true
+        run: |
+          if npm run lint -- --base origin/main > /tmp/lint-output.txt 2>&1; then
+            echo "LINT_PASSED=true" >> "$GITHUB_ENV"
+          else
+            echo "LINT_PASSED=false" >> "$GITHUB_ENV"
+          fi
+          cat /tmp/lint-output.txt
+
+      - name: Post PR comment on failure
+        if: env.LINT_PASSED == 'false'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const output = fs.readFileSync('/tmp/lint-output.txt', 'utf8').trim();
+            const body = [
+              '## Docs lint failed',
+              '',
+              'Fix the following issues before merging:',
+              '',
+              '```',
+              output,
+              '```',
+              '',
+              '### Required frontmatter',
+              '',
+              'Every `.md` file under `docs/` must include:',
+              '',
+              '```yaml',
+              '---',
+              'url: /your-product/your-article-slug',
+              'marker: Your Product Name',
+              'heading: Your Article Title',
+              '---',
+              '```',
+              '',
+              '| Field | Rule |',
+              '|-------|------|',
+              '| `url` | Must not start with `/docs/` or end with `/` |',
+              '| `marker` | Non-empty string — used as the CMS title prefix |',
+              '| `heading` | Non-empty string — used as the article section heading |',
+              '',
+              'Also ensure the file has a `.md` extension, otherwise it will not be synced.',
+            ].join('\n');
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body,
+            });
+
+      - name: Fail if lint errors found
+        if: env.LINT_PASSED == 'false'
+        run: |
+          echo "Lint failed — see errors above and in the PR comment."
+          exit 1
