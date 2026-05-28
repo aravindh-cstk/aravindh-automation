@@ -33,19 +33,23 @@ export async function runSync(
   );
 
   const results: SyncResult[] = [];
+  const CONCURRENCY = 5;
 
-  for (const change of changes) {
-    try {
-      const result = await processChange(config, client, change, beforeSha);
-      results.push(result);
-      logResult(result);
-    } catch (err) {
-      const message = err instanceof Error ? err.message : String(err);
-      const result: SyncResult = {
-        path: change.relativePath,
-        action: "skipped",
-        error: message,
-      };
+  for (let i = 0; i < changes.length; i += CONCURRENCY) {
+    const batch = changes.slice(i, i + CONCURRENCY);
+    const settled = await Promise.allSettled(
+      batch.map((change) => processChange(config, client, change, beforeSha)),
+    );
+    for (let j = 0; j < settled.length; j++) {
+      const s = settled[j];
+      const result: SyncResult =
+        s.status === "fulfilled"
+          ? s.value
+          : {
+              path: batch[j].relativePath,
+              action: "skipped",
+              error: s.reason instanceof Error ? s.reason.message : String(s.reason),
+            };
       results.push(result);
       logResult(result);
     }
