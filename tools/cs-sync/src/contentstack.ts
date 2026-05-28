@@ -110,6 +110,34 @@ export class ContentstackClient {
     }
   }
 
+  async listRecentEntries(sinceIso: string): Promise<ContentstackEntry[]> {
+    const query = JSON.stringify({ updated_at: { $gt: sinceIso } });
+    const params = new URLSearchParams({
+      query,
+      locale: this.config.CS_LOCALE,
+      include_count: "true",
+      limit: "100",
+    });
+    const url = `${this.entriesBase()}?${params}`;
+
+    const res = await fetch(url, { headers: this.headers() });
+
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(
+        `listRecentEntries failed — GET ${url} returned HTTP ${res.status} ${res.statusText}.\n` +
+        `  Stack: ${this.config.CS_API_KEY} | Content-type: ${this.config.CS_CONTENT_TYPE} | Locale: ${this.config.CS_LOCALE}\n` +
+        `  since: ${sinceIso}\n` +
+        `  Response body: ${text}`,
+      );
+    }
+
+    const data = (await res.json()) as { entries?: ContentstackEntry[] };
+    const entries = data.entries ?? [];
+    console.log(`listRecentEntries: ${entries.length} entries updated since ${sinceIso}`);
+    return entries;
+  }
+
   async uploadAsset(filePath: string): Promise<{ url: string; uid: string }> {
     const buffer = fs.readFileSync(filePath);
     const filename = path.basename(filePath);

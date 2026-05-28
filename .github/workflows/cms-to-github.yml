@@ -1,0 +1,91 @@
+name: Sync CMS changes to GitHub
+
+on:
+  schedule:
+    # Runs every 15 minutes. Looks back 20 minutes to cover any timing gap.
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+    inputs:
+      lookback_minutes:
+        description: "How many minutes back to check for CMS changes"
+        default: "20"
+        required: false
+
+concurrency:
+  group: cms-to-github
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  cms-pull:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: tools/cs-sync/package-lock.json
+
+      - name: Install dependencies
+        working-directory: tools/cs-sync
+        run: npm ci
+
+      - name: Pull changes from CMS
+        working-directory: tools/cs-sync
+        env:
+          CONTENTSTACK_API_KEY: ${{ secrets.CONTENTSTACK_API_KEY }}
+          CONTENTSTACK_MANAGEMENT_TOKEN: ${{ secrets.CONTENTSTACK_MANAGEMENT_TOKEN }}
+          CONTENTSTACK_ENVIRONMENT: ${{ vars.CONTENTSTACK_ENVIRONMENT }}
+          CS_REGION: us
+          CS_CONTENT_TYPE: docs_article
+        run: npm run cms-pull -- --lookback ${{ inputs.lookback_minutes || '20' }}
+
+      - name: Check for changes
+        id: changes
+        run: |
+          if git diff --quiet; then
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+            echo "No doc files changed — nothing to PR."
+          else
+            echo "has_changes=true" >> "$GITHUB_OUTPUT"
+            echo "Changed files:"
+            git diff --name-only
+          fi
+
+      - name: Open PR with CMS changes
+        if: steps.changes.outputs.has_changes == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BRANCH="cms-sync/$(date -u +%Y%m%d-%H%M%S)"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git checkout -b "$BRANCH"
+          git add docs/
+          git commit -m "chore: sync doc changes from Contentstack CMS"
+          git push origin "$BRANCH"
+
+          CHANGED_FILES=$(git diff origin/main..."$BRANCH" --name-only | sed 's/^/- /' | head -20)
+
+          gh pr create \
+            --title "CMS → GitHub: doc changes detected" \
+            --body "## CMS → GitHub sync
+
+          This PR was automatically created because one or more \`docs_article\` entries were edited directly in Contentstack and differ from the current files in \`docs/\`.
+
+          **Review the diff carefully before merging** — in particular check that no content was unintentionally overwritten.
+
+          ### Changed files
+          ${CHANGED_FILES}
+
+          ---
+          _Triggered by the \`cms-to-github\` workflow · $(date -u '+%Y-%m-%d %H:%M UTC')_" \
+            --base main \
+            --head "$BRANCH"
