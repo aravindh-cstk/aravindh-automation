@@ -4,6 +4,7 @@ import type { ContentstackClient } from "./contentstack.js";
 
 const IMG_SRC_RE = /<img([^>]*)\ssrc=["']([^"']+)["']([^>]*)>/gi;
 const MD_IMAGE_RE = /!\[[^\]]*]\(([^)]+)\)/g;
+const CS_CDN_RE = /images\.contentstack\.io\/v3\/assets\/[^/]+\/([^/]+)\//;
 
 function isLocalAssetRef(ref: string): boolean {
   if (!ref || ref.startsWith("http://") || ref.startsWith("https://")) {
@@ -13,6 +14,10 @@ function isLocalAssetRef(ref: string): boolean {
     return false;
   }
   return true;
+}
+
+function extractCsAssetUid(url: string): string | null {
+  return url.match(CS_CDN_RE)?.[1] ?? null;
 }
 
 function resolveLocalPath(docDir: string, ref: string): string {
@@ -58,10 +63,15 @@ export async function processImagesInHtml(
     const after = match[3] ?? "";
 
     const uploaded = await ensureUploaded(src);
-    if (!uploaded) continue;
+    if (uploaded) {
+      result = result.replace(full, `<img${before} src="${uploaded.url}" asset_uid="${uploaded.uid}"${after}>`);
+      continue;
+    }
 
-    const replacement = `<img${before} src="${uploaded.url}" asset_uid="${uploaded.uid}"${after}>`;
-    result = result.replace(full, replacement);
+    const csUid = extractCsAssetUid(src);
+    if (csUid && !full.includes("asset_uid=")) {
+      result = result.replace(full, `<img${before} src="${src}" asset_uid="${csUid}"${after}>`);
+    }
   }
 
   return result;
