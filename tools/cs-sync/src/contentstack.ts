@@ -138,6 +138,29 @@ export class ContentstackClient {
     return entries;
   }
 
+  async findAssetByFilename(filename: string): Promise<{ url: string; uid: string } | null> {
+    const query = JSON.stringify({ filename });
+    const params = new URLSearchParams({
+      query,
+      include_count: "true",
+      limit: "1",
+    });
+
+    const res = await fetch(`${this.config.baseUrl}/assets?${params}`, {
+      headers: this.headers(),
+    });
+
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(`findAssetByFilename failed (${res.status}): ${text}`);
+    }
+
+    const data = (await res.json()) as { assets?: Array<{ url?: string; uid?: string }> };
+    const asset = data.assets?.[0];
+    if (!asset?.url || !asset?.uid) return null;
+    return { url: asset.url, uid: asset.uid };
+  }
+
   async uploadAsset(filePath: string): Promise<{ url: string; uid: string }> {
     const buffer = fs.readFileSync(filePath);
     const filename = path.basename(filePath);

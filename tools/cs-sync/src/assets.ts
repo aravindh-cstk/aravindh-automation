@@ -45,6 +45,12 @@ export async function processImagesInHtml(
     const cached = uploads.get(abs);
     if (cached) return cached;
 
+    const existing = await client.findAssetByFilename(path.basename(abs));
+    if (existing) {
+      uploads.set(abs, existing);
+      return existing;
+    }
+
     const uploaded = await client.uploadAsset(abs);
     uploads.set(abs, uploaded);
     return uploaded;
